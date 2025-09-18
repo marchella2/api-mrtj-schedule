@@ -15,6 +15,10 @@ func Initiate(router *gin.RouterGroup) {
 		// redirect to service
 		GetAllStations(c, stationService)
 	})
+
+	station.GET("/:id", func(c *gin.Context) {
+		CheckSchedulesByStation(c, stationService)
+	})
 }
 
 func GetAllStations(c *gin.Context, service Service) {
@@ -36,4 +40,24 @@ func GetAllStations(c *gin.Context, service Service) {
 		Data:    datas,
 	})
 
+}
+
+func CheckSchedulesByStation(c *gin.Context, service Service) {
+	id := c.Param("id")
+
+	datas, err := service.CheckScheduleByStation(id)
+	if err != nil {
+		c.JSON(http.StatusBadRequest, response.APIResponse{
+			Success: false,
+			Message: err.Error(),
+			Data:    nil,
+		})
+		return
+	}
+
+	c.JSON(http.StatusOK, response.APIResponse{
+		Success: true,
+		Message: "Success get schedules by station",
+		Data:    datas,
+	})
 }
